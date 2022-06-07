@@ -1,0 +1,100 @@
+<html>
+<head>
+
+	<title>Object Detection on Images</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+    <style>
+    canvas
+      {
+          box-shadow: 10px 10px 10px grey;
+          border-radius: 10px;
+      }
+      #b1
+      {
+        float: right;
+          background-color: rgb(122, 220, 122);
+          border-radius: 50px;
+      }
+    </style>
+</head>
+
+<body class="bg">
+    <center>
+      <h1 class="head">Object Detection</h1>
+  
+      <h3 id="status" class="btn btn-danger"></h3>
+      <br>
+      
+      <button onclick="back();" id="b1">Back</button>
+    </center>
+
+    <script>
+img = ""
+status = "";
+object = [];
+
+function preload()
+{
+    img = loadImage('bottles.jpg');
+}
+function setup()
+{
+    canvas = createCanvas(640 , 420);
+    canvas.center();
+    objectDetector = ml5.objectDetector('cocossd', modelLoaded);
+    document.getElementById("status").innerHTML = "Status : Detecting Objects";
+}
+function draw()
+{
+    image(img, 0, 0, 640, 420);
+   
+    if(status != "")
+    {
+        for(i = 0; i < object.length; i++){
+            document.getElementById("status").innerHTML = "Status : Object Detecting";
+        
+            fill('#ff0000');
+            percent = floor(object[i].confidence * 100);
+            text(object[i].label + " " + percent + "%", object[i].x + 15, object[i].y + 15);
+            noFill();
+            stroke('#ff0000');
+            rect(object[i].x, object[i].y, object[i].width, object[i].height);
+        }
+    }
+
+}
+function modelLoaded()
+{
+    console.log("Model Loaded");
+    status = true;
+    objectDetector.detect(img, gotResult);
+}
+function gotResult(error, result)
+{
+    if(error)
+    {
+        console.error(error);
+    }
+    console.log(result);
+    object = result;
+   
+}
+        </script>
+        <script src="main.js"></script>
+  </body>
+  </html>
+</html>
